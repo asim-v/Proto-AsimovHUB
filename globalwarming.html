@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<link rel="stylesheet" href="assets/css/stylesheet.css" rel="stylesheet" />
+<html itemscope itemtype="http://schema.org/Map" prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb#">
+<head>
+	<style type="text/css">
+		.arrow {
+		position: relative;
+		  top: 10%;
+		  width: 1rem;
+		  height: 1rem;
+		  float: left;
+		  bottom: 0;
+		  background: transparent;
+		  border-top: .4rem solid white;
+		  border-right: .4rem solid white;
+		  box-shadow: 0 0 0 lightgray;
+		  -webkit-transition: all 200ms ease;
+		  transition: all 200ms ease;
+		}
+		.arrow.left {
+		  left: 0;
+		  -webkit-transform: translate3d(0, -50%, 0) rotate(-135deg);
+		          transform: translate3d(0, -50%, 0) rotate(-135deg);
+		}
+		.arrow.right {
+		  right: 0;
+		  -webkit-transform: translate3d(0, -50%, 0) rotate(45deg);
+		          transform: translate3d(0, -50%, 0) rotate(45deg);
+		}
+		.arrow:hover {
+		  border-top: .4rem solid orange;
+		  border-right: .4rem solid orange;
+		  box-shadow: .2rem -.2rem 0 black;
+		}
+		.arrow:hover.left {
+		  left: -.2rem;
+		}
+		.arrow:hover.right {
+		  right: -.2rem;
+		}
+
+	</style>
+    <meta charset="utf-8"/>
+    <title>Asimov Network :: Sistema animado de visualizacion en tiempo real</title>
+    <meta itemprop="name"                                      content="Asimov Network"/>
+    <meta itemprop="description"     name="description"        content="Sistema animado de visualizacion en tiempo real"/>
+
+    <meta property="og:type"        content="website"/>
+    <meta property="og:title"       content="earth"/>
+    <meta property="og:description" content="An animated map of global wind and weather. Visit the community at https://www.facebook.com/EarthWindMap"/>
+    <meta property="og:url"         content="http://earth.nullschool.net"/>
+    <meta property="og:image"       content="http://earth.nullschool.net/preview.jpg"/>
+
+    <link rel="shortcut icon" href="/favicon.ico"/>
+    <link rel="apple-touch-icon" sizes="120x120" href="/iphone-icon.png"/>
+    <link rel="apple-touch-icon" sizes="152x152" href="/ipad-icon.png"/>
+    <link rel="stylesheet" type="text/css" href="/styles/styles.css"/>
+
+    <link rel="alternate" hreflang="x-default" href="http://earth.nullschool.net/"/>
+    <link rel="alternate" hreflang="ja" href="http://earth.nullschool.net/jp/"/>
+</head>
+<body data-lang="en">
+
+    <!--[if lte IE 8]><p id="warn">This site requires IE9 or newer.</p><![endif]-->
+
+    <div id="display">
+        <svg id="map" class="fill-screen" xmlns="http://www.w3.org/2000/svg" version="1.1"></svg>
+        <canvas id="animation" class="fill-screen"></canvas>
+        <canvas id="overlay" class="fill-screen"></canvas>
+        <svg id="foreground" class="fill-screen" xmlns="http://www.w3.org/2000/svg" version="1.1"></svg>
+    </div>
+
+    <div id="sponsor" class="invisible">
+        <p><span id="sponsor-hide" class="text-button invisible"> ✕ </span>Comunidad</p>
+    </div>
+
+    <div id="details">
+        <p id="status"></p>
+        <div id="location">
+            <p>
+                <span id="location-coord"></span>
+                <span id="location-close" class="invisible text-button"> ✕ </span>
+            </p>
+            <p>
+                <span id="location-wind"></span>
+                <span id="location-wind-units" class="text-button"></span>
+            </p>
+            <p>
+                <span id="location-value"></span>
+                <span id="location-value-units" class="text-button"></span>
+            </p>
+        </div>
+
+        <p id="earth">
+            <span id="show-menu" class="text-button" title="menu">AsimovNET</span><a href="index.html" class="arrow left"></a>
+            <span id="progress" class="invisible"></span>
+        </p>
+
+        <div id="menu" class="invisible">
+            <p>Dia | <span
+                id="data-date" class="local"></span> <span
+                id="toggle-zone" class="text-button"></span>
+            </p>
+            <p>Datos | <span id="data-layer"></span></p>
+            <p><span id="scale-label">Scale | </span><canvas id="scale"></canvas></p>
+            <p>Fuente | <span id="data-center"></span></p>
+            <p>Control | <span
+                class="text-button" id="nav-now" title="Current Conditions">Now</span><span
+                class="text-button" id="nav-backward-more"> « </span> – <span
+                class="text-button" id="nav-backward"> ‹ </span> – <span
+                class="text-button" id="nav-forward"> › </span> – <span
+                class="text-button" id="nav-forward-more"> » </span><span
+                class="text-button" id="show-location" title="Current Position">〖◯〗</span><span
+                class="text-button" id="option-show-grid" title="Toggle Grid">Cuadrícula</span>
+            </p>
+            <p>Modo | <span
+                class="text-button" id="wind-mode-enable">Aire</span> – <span
+                class="text-button" id="ocean-mode-enable">Oceano</span>
+            </p>
+            <p class="wind-mode">Altura | <span
+                class="surface text-button" id="surface-level" title="Surface">Sfc</span> – <span
+                class="surface text-button" id="isobaric-1000hPa">1000</span> – <span
+                class="surface text-button" id="isobaric-850hPa">850</span> – <span
+                class="surface text-button" id="isobaric-700hPa">700</span> – <span
+                class="surface text-button" id="isobaric-500hPa">500</span> – <span
+                class="surface text-button" id="isobaric-250hPa">250</span> – <span
+                class="surface text-button" id="isobaric-70hPa">70</span> – <span
+                class="surface text-button" id="isobaric-10hPa">10</span> hPa
+            </p>
+            <p class="wind-mode">Sobreponer | <span
+                class="text-button" id="overlay-off">None</span> – <span
+                class="text-button" id="overlay-wind" title="Wind Speed">Viento</span> – <span
+                class="text-button" id="overlay-temp" title="Temperature">Temp</span> – <span
+                class="text-button" id="overlay-relative_humidity" title="Relative Humidity">RH</span> – <span
+                class="text-button" id="overlay-air_density" title="Air Density">AD</span> – <span
+                class="text-button" id="overlay-wind_power_density" title="Wind Power Density">WPD</span>
+            </p>
+            <p class="wind-mode"><span style="visibility:hidden">Sobreponer</span> | <span
+                class="text-button" id="overlay-total_precipitable_water" title="Total Precipitable Water">TPW</span> – <span
+                class="text-button" id="overlay-total_cloud_water" title="Total Cloud Water">TCW</span> – <span
+                class="text-button" id="overlay-mean_sea_level_pressure" title="Mean Sea Level Pressure">MSLP</span>
+            </p>
+            <p class="ocean-mode invisible">Animar | <span
+                class="text-button" id="animate-currents" title="Currents">Currents</span>
+            </p>
+            <p class="ocean-mode invisible">Sobreponer | <span
+                class="text-button" id="overlay-ocean-off">None</span> – <span
+                class="text-button" id="overlay-currents" title="Currents">Actual</span>
+            </p>
+            <p class="ocean-mode invisible"><span style="visibility:hidden">Sobreponer</span> |</p>
+            <p>Proyección | <span
+                class="proj text-button" id="atlantis" title="Atlantis">A</span> – <span
+                class="proj text-button" id="azimuthal_equidistant" title="Azimuthal Equidistant">AE</span> – <span
+                class="proj text-button" id="conic_equidistant" title="Conic Equidistant">CE</span> – <span
+                class="proj text-button" id="equirectangular" title="Equirectangular">E</span> – <span
+                class="proj text-button" id="orthographic" title="Orthographic">O</span> – <span
+                class="proj text-button" id="stereographic" title="Stereographic">S</span> – <span
+                class="proj text-button" id="waterman" title="Waterman Butterfly">WB</span> – <span
+                class="proj text-button" id="winkel3" title="Winkel Tripel">W3</span>
+            </p>
+            <!--<p>免責事項 | 正確な情報を提供するためのものではありません</p>-->
+            <p>
+                <a href="about.html" class="internal-link">Acerca de</a>
+                <a href="https://www.facebook.com/Bazazuki" class="social-icon" title="Facebook">&#xe027;</a>
+                <a href="https://www.facebook.com/Bazazuki" class="social-icon" title="Twitter">&#xe086;</a>
+            </p>
+        </div>
+    </div>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js" charset="utf-8"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.0/backbone-min.js" charset="utf-8"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/topojson/1.1.0/topojson.min.js" charset="utf-8"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.3.10/d3.min.js" charset="utf-8"></script>
+
+<!--
+    <script src="/libs/underscore.js/1.6.0/underscore.js" charset="utf-8"></script>
+    <script src="/libs/backbone.js/1.1.0/backbone.js" charset="utf-8"></script>
+    <script src="/libs/topojson/1.1.0/topojson.js" charset="utf-8"></script>
+    <script src="/libs/d3/3.3.10/d3.js" charset="utf-8"></script>
+-->
+
+    <script src="/libs/d3.geo/0.0.0/d3.geo.projection.v0.min.js" charset="utf-8"></script>
+    <script src="/libs/d3.geo/0.0.0/d3.geo.polyhedron.v0.min.js" charset="utf-8"></script>
+    <script src="/libs/when/2.6.0/when.js" charset="utf-8"></script>
+
+    <script src="/libs/earth/1.0.0/micro.js" charset="utf-8"></script>
+    <script src="/libs/earth/1.0.0/globes.js" charset="utf-8"></script>
+    <script src="/libs/earth/1.0.0/products.js" charset="utf-8"></script>
+    <script src="/libs/earth/1.0.0/earth.js" charset="utf-8"></script>
+
+</body>
+</html>
