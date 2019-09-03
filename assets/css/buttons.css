@@ -1,0 +1,48 @@
+.buttonr{
+  font-family: "Consolas";
+  background:#00de6b;
+  color:#fff;
+  border:none;
+  position:relative;
+  height:60px;
+  font-size:1.6em;
+  padding:0 2em;
+  cursor:pointer;
+  outline:none;
+  transition:400ms ease all;
+
+}
+.buttonr:hover{
+  background:#fff;
+  color:#0f0f0f;
+}
+.buttonr:before,.buttonr:after{
+  content:'';
+  position:absolute;
+  top:0;
+  right:0;
+  height:2px;
+  width:0;
+  background: #005e2d;
+  transition:400ms ease all;
+}
+.buttonr:after{
+  right:inherit;
+  top:inherit;
+  left:0;
+  bottom:0;
+}
+.buttonr:hover:before,.buttonr:hover:after{
+  width:100%;
+  transition:800ms ease all;
+}
+
+.buttonr.a{
+    background:#0003a6
+}
+.buttonr.b{
+    background:#4433a1
+}
+.buttonr.c{
+    background:#a88211
+}
